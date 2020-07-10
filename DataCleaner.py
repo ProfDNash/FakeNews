@@ -52,6 +52,8 @@ finalData = finalData.sample(frac=1).reset_index(drop=True)
 
 # Drop 'title', 'text', 'subject', and 'date' which we no longer need
 finalData = finalData.drop(['title', 'text', 'subject', 'date'], axis = 1)
+##save final sentence strings for later use
+np.save('Articles', finalData.sentences.tolist())
 ##preprocess each sentence
 def ProcessArticles(dat):
     processedData = []
@@ -84,7 +86,7 @@ for article in processedData:
 ##convert to np.arrays for use in various algorithms
 X = np.array(X)
 y = np.array(processedLabels)
-np.save('X',X)  ##this creates X.npy
-np.save('y',y)  ##this creates y.npy
+np.save('X',X)
+np.save('y',y)
 
 
