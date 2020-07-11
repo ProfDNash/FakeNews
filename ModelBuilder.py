@@ -43,6 +43,43 @@ if correct/(correct+incorrect)<0.5: ##then the labels are backwards in the clust
 else:
     print('Cluster 0 most closely matches Fake, while Cluster 1 most closely matches True')
     print("Correctly clustered news: " + str((correct*100)/(correct+incorrect)) + '%')
+    
+
+def PCA_TSNE(X,y,pred):
+    print('Performing PCA to plot in 2-D. This may take awhile...')
+    # PCA of sentence vectors in order to plot in 2-D
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(X)
+    print('PCA done!')
+
+    PCA_df = pd.DataFrame(pca_result)
+    PCA_df['prediction'] = pred
+    PCA_df['actual'] = y
+    PCA_df.columns = ['x1','x2','prediction','actual']
+    
+    # T-SNE
+    print('Performing T-SNE.  This may take awhile...')
+    tsne = TSNE(n_components=2)
+    tsne_result = tsne.fit_transform(pca_result)
+    print('T-SNE done!')
+
+    TSNE_df = pd.DataFrame(tsne_result)
+    TSNE_df['prediction'] = pred
+    TSNE_df['actual'] = y
+    TSNE_df.columns = ['x1','x2','prediction','actual']
+    
+    return PCA_df, TSNE_df
+    
+def visualizePredictions(PCA_df, TSNE_df):
+    fig, ax = plt.subplots(2, 2, figsize=(12,12))
+    sns.scatterplot(data=PCA_df,x='x1',y='x2',hue='actual',legend="full",alpha=0.5,ax=ax[0,1])
+    sns.scatterplot(data=TSNE_df,x='x1',y='x2',hue='actual',legend="full",alpha=0.5,ax=ax[0,0])
+    sns.scatterplot(data=PCA_df,x='x1',y='x2',hue='prediction',legend="full",alpha=0.5,ax=ax[1,1])
+    sns.scatterplot(data=TSNE_df,x='x1',y='x2',hue='prediction',legend="full",alpha=0.5,ax=ax[1,0])
+    ax[0,0].set_title('Actual Labels on TSNE')
+    ax[0,1].set_title('Actual Labels on PCA')
+    ax[1,0].set_title('Predictions on TSNE')
+    ax[1,1].set_title('Predictions on PCA')
 
 
 input("Press enter to train a Random Forest Classifier")
